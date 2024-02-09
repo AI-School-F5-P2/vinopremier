@@ -29,7 +29,7 @@ def read_root():
     return {"Hello": "World"}
 
 
-@app.post("/prueba")
+@app.post("/wineRecommendation")
 def encontrar_vinos_similares(data_vino: data_vino):
     # PASAR A UNA DICT
     try:
