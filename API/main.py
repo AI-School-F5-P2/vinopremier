@@ -1,73 +1,80 @@
-from flask import Flask, request, jsonify
-# from flask_limit import Limiter
-import logging
-import pickle 
+from fastapi import FastAPI
 import pandas as pd 
-from sklearn.preprocessing import StandardScaler
+import pickle 
+from pydantic import BaseModel
+from typing import List
+from sklearn.preprocessing import LabelEncoder, MinMaxScaler
 
-# INSTANCIAMOS FLASK 
-app = Flask(__name__)
-logging.basicConfig(filename="./Model/app.log", level=logging.INFO)
-
-# CARGAMOS EL MODELO
-with open('./Model/knn_model.pkl', 'rb') as file:
-    knn_model = pickle.load(file)
+# INSTANCIA DE FASTAPI
+app = FastAPI()
 
 # CARGAMOS EL DATASET
-data = pd.read_csv('./Model/data.csv')
-df_vinos = data
+df = pd.read_csv('./Model/dataset_vinos.csv')
 
-features = data[['uvas', 'añada', 'D.O.', 'tipo_crianza', 'meses_barrica', 'tipo_vino']]
-# Convertir variables categóricas a variables dummy
-features = pd.get_dummies(features)
-# Normalizar los datos (opcional pero recomendado para KNN)
-scaler = StandardScaler()
-features_scaled = scaler.fit_transform(features)
-
-
-
-features_train = pd.get_dummies(data[['uvas', 'añada', 'D.O.', 'tipo_crianza', 'meses_barrica', 'tipo_vino']])
-features_train_scaled = scaler.transform(features_train)
-
-
-# Función para encontrar los vinos más similares a uno dado
-def encontrar_vinos_similares(vino_id, features_train, n_vecinos=5):
-    # Obtener las características del vino de interés
-    # vino_interes = data.loc[data['SKU'] == vino_id, features_train]
-    vino_interes = df_vinos.loc[df_vinos['SKU'] == vino_id, ['uvas', 'añada', 'D.O.', 'tipo_crianza', 'meses_barrica', 'tipo_vino', 'bodega']]
-    vino_interes = pd.get_dummies(vino_interes)
-    # Asegurarnos de que las columnas dummy coincidan con las del conjunto de entrenamiento
-    vino_interes = vino_interes.reindex(columns=features.columns, fill_value=0)
-    vino_interes_scaled = scaler.transform(vino_interes)
-
-    # Encontrar los vecinos más cercanos usando el conjunto de entrenamiento
-    _, indices_vecinos = knn_model.kneighbors(vino_interes_scaled)
-
-    # Mostrar los n_vecinos más cercanos (excluyendo el propio vino)
-    vinos_similares = data.iloc[indices_vecinos[0][:n_vecinos + 1]]['SKU']
-    return vinos_similares
+class data_vino(BaseModel):
+    SKU: List[str]
+    name: List[str]
+    uvas: List[str]
+    añada: List[str]
+    DO : List[str]
+    tipo_crianza: List[str]
+    meses_barrica: List[str]
+    tipo_vino: List[str]
+    bodega: List[str]
+    final_price: List[float]
 
 # RUTA
-@app.route('/')
-def index():
-    return "Hello, World!"
+@app.get("/")
+def read_root():
+    return {"Hello": "World"}
 
 
-@app.route('/api/wineRecommendation', methods=['POST'])
-def wineRecommendation():
-    try:
-        result = None
-        input_wine = request.args.get('wine')
-        if not input_wine or input_wine == "" or input_wine is None:
-            return jsonify({"Error al consultar vinos"}), 400
-        if input_wine:
-            result = encontrar_vinos_similares(input_wine, features_train_scaled, 5)
-            result_list = result.tolist() if isinstance(result, pd.Series) else result
-            return jsonify({"result": result_list}), 200
-    except Exception as e:
-        logging.error(e)
-        return jsonify({"algo paso"}), 400
+@app.post("/prueba")
+def encontrar_vinos_similares(data_vino: data_vino):
+    # PASAR A UNA DICT
+    data_vino = data_vino.dict()
+    categoricas = ['uvas', 'añada', 'DO', 'tipo_crianza', 'meses_barrica', 'tipo_vino', 'bodega']
+    numericas = ['final_price']
+    
+    # Cargar el modelo y objetos necesarios desde el archivo pickle
+    with open('./Model/modelo.pickle', 'rb') as f:
+        knn_loaded, label_encoders_loaded, scaler_loaded = pickle.load(f)
 
+    def obtener_numero_codificado(columna, valor_original):
+        # Aplicar la transformación para obtener el número codificado
+        numero_codificado = label_encoders_loaded[columna].transform([valor_original])[0]
+        return numero_codificado
+    
+    # Generar un dataframe con todos los atributos
+    vino_agotado = pd.DataFrame(data_vino)
+    # Generar un dataframe con todos los atributos
+    #vino_agotado = pd.DataFrame(data_vino)
 
-if __name__ == '__main__':
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    # Extraer solo las características categóricas
+    vino_agotado_categoricas = vino_agotado[categoricas]
+
+    # Aplicar la función obtener_numero_codificado a las características categóricas de data_vino
+    # para recuperar los números con los que se codificó anteriormente al hacer el entrenamiento del modelo
+    for columna in categoricas:
+        vino_agotado_categoricas.loc[:, columna] = obtener_numero_codificado(columna, vino_agotado_categoricas[columna].iloc[0])
+
+    # Agregar las variables numéricas
+    vino_agotado_categoricas[numericas] = vino_agotado[numericas]
+
+    # Escalar todos los atributos
+    vino_agotado_scaled = scaler_loaded.transform(vino_agotado_categoricas)
+
+    # Realizar predicciones
+    vino_agotado_codificado = vino_agotado_scaled.reshape(1, -1) # Reshape para satisfacer las dimensiones esperadas
+    distancias, indices = knn_loaded.kneighbors(vino_agotado_codificado)
+   
+    
+
+    vino_similar_indices = indices[0]
+    vino_similar = df.iloc[vino_similar_indices]
+
+    # Descartar el mismo vino que se pasa a la función
+    vino_similar = vino_similar[vino_similar['SKU'] != data_vino['SKU'][0]]
+    
+    return vino_similar.to_dict(orient='records')
+ 
