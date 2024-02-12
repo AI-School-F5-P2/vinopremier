@@ -20,8 +20,6 @@ def read_root():
     return {"Hello": "World"}
 
 
-
-
 @app.post("/wineRecommendation")
 def encontrar_vinos_similares(sku:sku):
     # PASAR A UNA DICT
@@ -61,14 +59,59 @@ def encontrar_vinos_similares(sku:sku):
         
         indices = indices.tolist()
 
-        vino_similar_indices = indices[0]
+        vino_similar_indices = indices[0][:15]
         vino_similar = df.iloc[vino_similar_indices]
+        # filtro que no se muestre el mismo vino agotado
         vino_similar = vino_similar[vino_similar['SKU'] != sku.SKU]
+        sku_vino_similar_dict = vino_similar['SKU']
+        sku_ordenados_por_precios = filtrar_por_precio(sku.SKU, sku_vino_similar_dict)
+        
+        # obtengo las filas del DataFrame
+        filas_seleccionadas = df.loc[df['SKU'].isin(sku_ordenados_por_precios)]
 
-        return vino_similar.to_dict(orient='records')
+        return filas_seleccionadas.to_dict('records')
         
         # return vino_agotado
     except Exception as e:
         # return con tipo de error 400 en mi return y un mensaje de error con la e
         return JSONResponse(content={"message": f"Hubo un problema al hacer la solicitud, Error: {e}"}, status_code=400)
+
+
+
+
+
+
+
+
+
+# esta funcion ordena primero los vinos que si estan en el rango de precios
+# y los que no los pone de ultimo
+def filtrar_por_precio(vino_id, vinos_similares_id):
+    matches = []
+    no_matches = []
+    # obtener el precio del vino
+    precio_vino = df[df['SKU'] == vino_id]['final_price'].values[0]
+
+    # calcular el mínimo y el máximo
+    porcentaje_por_encima = 0.2
+    porcentaje_por_debajo = 0.05
+    precio_min = abs(precio_vino * porcentaje_por_debajo - precio_vino)
+    precio_max = precio_vino * porcentaje_por_encima + precio_vino
+
+    for id_vino in vinos_similares_id:
+        # Verificar si el ID del vino está presente en el dataframe
+        if id_vino in df['SKU'].values:
+            vino = df[df['SKU'] == id_vino]
+            precio_del_vino = vino['final_price'].values[0]
+            if precio_min <= precio_del_vino <= precio_max:
+                matches.append(vino['SKU'].values[0])
+            else:
+                no_matches.append(vino['SKU'].values[0])
+        else:
+            print(f"El vino con SKU {id_vino} no se encuentra en el dataframe.")
+
+    
+    results = matches
+
+    return results
 
