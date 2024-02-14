@@ -5,6 +5,7 @@ from pydantic import BaseModel
 from typing import List
 from sklearn.preprocessing import LabelEncoder, MinMaxScaler
 from fastapi.responses import JSONResponse
+from obtener_img import Vino
 # INSTANCIA DE FASTAPI
 app = FastAPI()
 
@@ -24,6 +25,7 @@ def read_root():
 def encontrar_vinos_similares(sku:sku):
     # PASAR A UNA DICT
     try:
+        vino = Vino()
         vino_agotado = df[df['SKU'] == sku.SKU]
 
         categoricas = ['uvas', 'añada', 'DO', 'tipo_crianza', 'meses_barrica', 'tipo_vino', 'bodega']
@@ -67,14 +69,17 @@ def encontrar_vinos_similares(sku:sku):
         sku_ordenados_por_precios = filtrar_por_precio(sku.SKU, sku_vino_similar_dict)
         
         # obtengo las filas del DataFrame
-        filas_seleccionadas = df.loc[df['SKU'].isin(sku_ordenados_por_precios)]
+        filas_seleccionadas_list = df.loc[df['SKU'].isin(sku_ordenados_por_precios)].to_dict('records')
+        # le agrego la imagen a todas las filas seleccionadas
+        filas_seleccionadas_list = vino.img(filas_seleccionadas_list)
 
-        return filas_seleccionadas.to_dict('records')
+        return filas_seleccionadas_list
         
         # return vino_agotado
     except Exception as e:
         # return con tipo de error 400 en mi return y un mensaje de error con la e
         return JSONResponse(content={"message": f"Hubo un problema al hacer la solicitud, Error: {e}"}, status_code=400)
+
 
 
 
