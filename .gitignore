@@ -5,3 +5,5 @@ knn_model.pkl
 dataset_vinos.csv
 modelo.pickle
 __pycache__
+.vs
+maikol/

@@ -4,13 +4,14 @@ class Vino():
     def __init__(self) -> None:
         self.df_sku_image = pd.read_csv('./Model/dataset_sku_image.csv')
      
-    def img(self, sku_list):
+    def img(self, vinos_similares_list):
+
         vinos_con_img_list = []
-        for vino in sku_list:
-            sku = vino['SKU']
+        for vino_similar in vinos_similares_list:
+            sku = vino_similar['SKU']
             img_url = self.df_sku_image[self.df_sku_image['SKU'] == sku]['image'].iloc[0]
-            vino['url_img'] = img_url
-            vinos_con_img_list.append(vino)
+            vino_similar['url_img'] = img_url
+            vinos_con_img_list.append(vino_similar)
 
         return vinos_con_img_list
         
