@@ -12,9 +12,13 @@ def obtener_productos_similares(sku):
     response = requests.post(url, json=sku.__dict__)
 
     if response.status_code == 200:
+        print(response.json())
         return response.json()
     else:
-        return None
+        print(response.json())
+        mensaje = response.json()
+        mensaje = {'error':mensaje['detail']}
+        return mensaje
 
 def mostrar_descripcion_producto(producto):
     st.write(f"Nombre: {producto['name']}")
@@ -29,7 +33,7 @@ def mostrar_descripcion_producto(producto):
     # Agrega aquí cualquier otra información que se desee mostrar
 
 def mostrar_descripcion_recomendacion(producto):
-    st.write(f"SKU: {producto['SKU']}")
+    # st.write(f"SKU: {producto['SKU']}")
     st.write(f"Nombre: {producto['name']}")
     st.write(f"Uvas: {producto['uvas']}")
     st.write(f"Añada: {producto['añada']}")
@@ -59,6 +63,11 @@ def main():
         sku_obj = SKU(SKU=sku_input)
         # Llamada a la función para obtener productos similares
         productos_similares = obtener_productos_similares(sku_obj)
+
+        if 'error' in productos_similares:
+            st.error(f"Error al obtener productos similares: {productos_similares['error']}")
+            return
+                
 
         if productos_similares:
             # Muestra la imagen y la descripción del producto original
@@ -108,7 +117,7 @@ def main():
                         st.write(f"URL de imagen no proporcionada para SKU: {producto['SKU']}")
 
                     # Muestra la descripción de la recomendación debajo de la imagen
-                    st.write("Descripción de la Recomendación:")
+                    # st.write("Descripción de la Recomendación:")
                     mostrar_descripcion_recomendacion(producto)
                     st.markdown("---")  # Agrega un separador entre las recomendaciones
 
