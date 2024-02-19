@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 import pandas as pd 
 import pickle 
 from pydantic import BaseModel
@@ -11,14 +11,34 @@ from filtrar_por_precio import FiltroPrecio
 
 class Encontrar_vinos_similares:
     def __init__(self):
+        self.df_completo = pd.read_csv('./Model/dataset_de_productos_completo.csv')
         pass
+
+    def validar_tipo_vino_agotado(self, sku_vino):
+        # Obtener el tipo de vino asociado al SKU
+        tipo_vino_sku = self.df_completo.loc[self.df_completo['SKU'] == sku_vino, 'tipo_vino'].iloc[0]
+
+        # Verificar si el tipo de vino es tinto, blanco o rosado
+        tipos_validos = ['Vino Tinto', 'Vino Blanco', 'Vino Rosado']
+        if tipo_vino_sku in tipos_validos:
+            return False
+        else:
+            return True
     
     def encontrar_vinos_similares(self, sku, df):
         # PASAR A UNA DICT
         try:
+            vinos_similares_list = []
             vino = Vino()
-            vino_agotado = df[df['SKU'] == sku]
+            vino_agotado = self.df_completo[self.df_completo['SKU'] == sku]
+            # valido que el sku exista en dataframe
+            if vino_agotado.empty:
+                raise ValueError(f"El SKU {sku} no se encuentra en el DataFrame.")
 
+            # valido que el sku sea del tipo de vino valido
+            if self.validar_tipo_vino_agotado(sku):
+                raise ValueError("El tipo de vino del vino seleccionado no es válido. Debe ser tinto, blanco o rosado.")
+                
             categoricas = ['uvas', 'añada', 'D.O.', 'tipo_crianza', 'meses_barrica', 'tipo_vino']
             numericas = ['final_price']
             
@@ -33,6 +53,10 @@ class Encontrar_vinos_similares:
 
             # Extraer solo las características categóricas
             vino_agotado_categoricas = vino_agotado[categoricas]
+
+            # Verifico si hay valores NaN en las características categóricas
+            if vino_agotado_categoricas.isnull().any().any():
+                raise ValueError("¡Hay valores NaN en las características del vino.!")
 
             # Aplicar la función obtener_numero_codificado a las características categóricas de data_vino
             # para recuperar los números con los que se codificó anteriormente al hacer el entrenamiento del modelo
@@ -53,11 +77,10 @@ class Encontrar_vinos_similares:
 
             vino_similar_indices = indices[0][:10]
             vino_similar = df.iloc[vino_similar_indices]
-            # filtro que no se muestre el mismo vino agotado
-            # vino_similar = vino_similar[vino_similar['SKU'] != sku]
             
+            # obtengo el porcentage de similitud
             similitudes_porcentaje = 1 / (1 + distancias)
-            vinos_similares_list = []
+            
             # Imprimir los porcentajes de similitud de los vinos más similares
             for indice, porcentaje in zip(indices[0], similitudes_porcentaje[0]):
                 vino_similar = df.iloc[indice]  # Obtener el vino similar
@@ -69,7 +92,17 @@ class Encontrar_vinos_similares:
             vinos_similares_list = vino.img(vinos_similares_list)
                
             return vinos_similares_list
-
+        
+        except ValueError as ve:
+            raise HTTPException(status_code=400, detail=str(ve))
+        
         except Exception as e:
             # return con tipo de error 400 en mi return y un mensaje de error con la e
             return JSONResponse(content={"message": f"Hubo un problema al hacer la solicitud, Error: {e}"}, status_code=400)
+
+
+
+
+
+
+
