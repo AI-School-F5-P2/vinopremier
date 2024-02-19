@@ -10,6 +10,7 @@ from filtrar_por_precio import FiltroPrecio
 from buscar_vinos_similares import Encontrar_vinos_similares
 from verificar_plan_marketin import Plan_marketin
 from aplicar_relevancia import PuntuadorDeVinos
+from fastapi.middleware.cors import CORSMiddleware
 
 
 # INSTANCIA DE FASTAPI
@@ -18,6 +19,15 @@ encontrar_vino = Encontrar_vinos_similares()
 filtar = FiltroPrecio()
 plan_marketin = Plan_marketin()
 puntuadorDeVinos = PuntuadorDeVinos()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Permite solicitudes desde cualquier origen
+    allow_credentials=True,
+    allow_methods=["GET", "POST"],  # Métodos HTTP permitidos
+    allow_headers=["*"],  # Encabezados permitidos
+)
+
 
 df = pd.read_csv('./Model/vinos_filtrados.csv')
 df_bodega = pd.read_csv('./Model/suppliers.csv')

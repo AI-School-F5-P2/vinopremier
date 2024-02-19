@@ -22,9 +22,9 @@ class PuntuadorDeVinos:
             sku_vino_similar = vino_similar['SKU']
             relevancia = 0
             if sku_vino_similar in sku_vinos_con_plan_marketin:
-                relevancia += 2  # Si hay marketing, sumamos 2 puntos
+                relevancia += 1  # Si hay marketing, sumamos 2 puntos
             if sku_vino_similar in sku_vinos_con_precio_mas_similar:
-                relevancia += 1  # Si hay precio similar, sumamos 1 punto
+                relevancia += 2  # Si hay precio similar, sumamos 1 punto
 
             vino_similar['nivel_relevancia'] = relevancia
             # Agregamos el SKU con su puntuación de relevancia

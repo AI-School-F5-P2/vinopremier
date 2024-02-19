@@ -20,11 +20,11 @@ def mostrar_descripcion_producto(producto):
     st.write(f"Nombre: {producto['name']}")
     st.write(f"Uvas: {producto['uvas']}")
     st.write(f"Añada: {producto['añada']}")
-    st.write(f"DO: {producto['DO']}")
+    st.write(f"DO: {producto['D.O.']}")
     st.write(f"Tipo de crianza: {producto['tipo_crianza']}")
     st.write(f"Meses de barrica: {producto['meses_barrica']}")
     st.write(f"Tipo de vino: {producto['tipo_vino']}")
-    st.write(f"Bodega: {producto['bodega']}")
+    st.write(f"proveedor: {producto['proveedor']}")
     st.write(f"Precio: ${producto['final_price']}")
     # Agrega aquí cualquier otra información que se desee mostrar
 
@@ -33,11 +33,11 @@ def mostrar_descripcion_recomendacion(producto):
     st.write(f"Nombre: {producto['name']}")
     st.write(f"Uvas: {producto['uvas']}")
     st.write(f"Añada: {producto['añada']}")
-    st.write(f"DO: {producto['DO']}")
+    st.write(f"DO: {producto['D.O.']}")
     st.write(f"Tipo de crianza: {producto['tipo_crianza']}")
     st.write(f"Meses de barrica: {producto['meses_barrica']}")
     st.write(f"Tipo de vino: {producto['tipo_vino']}")
-    st.write(f"Bodega: {producto['bodega']}")
+    st.write(f"proveedor: {producto['proveedor']}")
     st.write(f"Precio: ${producto['final_price']}")
     # Agrega aquí cualquier otra información que se desee mostrar
 
