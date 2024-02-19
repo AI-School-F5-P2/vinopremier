@@ -33,7 +33,6 @@ def mostrar_descripcion_producto(producto):
     # Agrega aquí cualquier otra información que se desee mostrar
 
 def mostrar_descripcion_recomendacion(producto):
-    # st.write(f"SKU: {producto['SKU']}")
     st.write(f"Nombre: {producto['name']}")
     st.write(f"Uvas: {producto['uvas']}")
     st.write(f"Añada: {producto['añada']}")
@@ -98,7 +97,7 @@ def main():
             # Utiliza una estructura de cuadrícula para mostrar las recomendaciones en columnas
             col_recomendaciones = st.columns(len(productos_similares))
 
-            for i, producto in enumerate(productos_similares[1:], start=1):
+            for i, producto in enumerate(productos_similares[0:], start=1):
                 with col_recomendaciones[i-1]:
                     st.write(f"Recomendación {i}:")
 

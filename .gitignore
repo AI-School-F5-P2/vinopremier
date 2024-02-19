@@ -7,3 +7,5 @@ modelo.pickle
 __pycache__
 .vs
 maikol/
+Model
+dataset_sku_image.csv
