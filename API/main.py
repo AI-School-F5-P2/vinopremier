@@ -1,4 +1,5 @@
 from fastapi import FastAPI, HTTPException
+import numpy as np
 import pandas as pd 
 import pickle 
 from pydantic import BaseModel
@@ -31,6 +32,7 @@ app.add_middleware(
 
 df = pd.read_csv('./Model/vinos_filtrados.csv')
 df_bodega = pd.read_csv('./Model/suppliers.csv')
+df_completo = pd.read_csv('./Model/dataset_de_productos_completo.csv')
 
 class sku(BaseModel):
     SKU: str
@@ -47,7 +49,7 @@ def encontrar_vinos_similares(sku: sku):
         sku = sku.SKU
         vinos_similares_list = encontrar_vino.encontrar_vinos_similares(sku, df)
         vinos_con_precio_mas_similar =  filtar.filtrar_por_precio(sku, vinos_similares_list, df)
-        vinos_con_plan_marketin = plan_marketin.filtrar_vinos_con_plan_marketing(vinos_similares_list, df_bodega, df)
+        vinos_con_plan_marketin = plan_marketin.filtrar_vinos_con_plan_marketing(vinos_con_precio_mas_similar, df_bodega, df)
         # unifico los vinos con plan de marketing y precio similares en un solo diccionario
         # para luego pasárselo a la función que va a puntuar con su nivel de relevancia
         vinos_precio_y_marketing = {'precio': vinos_con_precio_mas_similar, 'marketin': vinos_con_plan_marketin}
@@ -90,3 +92,33 @@ def obtener_vinos_similares_con_m_embeding(sku: sku):
         raise HTTPException(status_code=400, detail=str(ve))
     
 
+
+
+
+
+@app.get("/vino_agotado/{sku}")
+def vino_agotado(sku: str):
+    vino_agotado = df_completo[df_completo['SKU'] == sku]
+    vino_agotado = vino_agotado[['SKU','name','uvas', 'añada', 'D.O.', 'tipo_crianza', 'meses_barrica', 'tipo_vino','final_price', 'proveedor']]
+    
+    vino_agotado.fillna(0, inplace=True)  # Reemplazar NaN con 0
+    vino_agotado = vino_agotado.replace([np.inf, -np.inf], np.nan).dropna()  # Eliminar filas con infinitos
+
+    return vino_agotado.to_dict(orient='records')
+
+
+
+
+
+# @app.post("/vino_agotdo")
+# def vino_agotado(sku):
+    
+#     # Filtrar el DataFrame para obtener el vino con el SKU especificado
+#     vino_agotado = df_completo[df_completo['SKU'] == sku]
+#     vino_agotado = vino_agotado[['SKU','name','uvas', 'añada', 'D.O.', 'tipo_crianza', 'meses_barrica', 'tipo_vino','final_price', 'proveedor']]
+    
+#     vino_agotado.fillna(0, inplace=True)  # Reemplazar NaN con 0
+#     vino_agotado = vino_agotado.replace([np.inf, -np.inf], np.nan).dropna()  # Eliminar filas con infinitos
+
+#     return vino_agotado.to_dict(orient='records')
+  
