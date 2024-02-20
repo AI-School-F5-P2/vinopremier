@@ -47,7 +47,7 @@ def encontrar_vinos_similares(sku: sku):
         sku = sku.SKU
         vinos_similares_list = encontrar_vino.encontrar_vinos_similares(sku, df)
         vinos_con_precio_mas_similar =  filtar.filtrar_por_precio(sku, vinos_similares_list, df)
-        vinos_con_plan_marketin = plan_marketin.filtrar_vinos_con_plan_marketing(vinos_con_precio_mas_similar, df_bodega, df)
+        vinos_con_plan_marketin = plan_marketin.filtrar_vinos_con_plan_marketing(vinos_similares_list, df_bodega, df)
         # unifico los vinos con plan de marketing y precio similares en un solo diccionario
         # para luego pasárselo a la función que va a puntuar con su nivel de relevancia
         vinos_precio_y_marketing = {'precio': vinos_con_precio_mas_similar, 'marketin': vinos_con_plan_marketin}
@@ -57,7 +57,7 @@ def encontrar_vinos_similares(sku: sku):
         for vino in vinos_con_relevancia:
             if 'description' in vino:
                 del vino['description']
-        return  vinos_similares_list
+        return  vinos_con_relevancia
     except KeyError:
         raise HTTPException(status_code=404, detail="SKU no encontrado")
     except ValueError as ve:
@@ -66,14 +66,14 @@ def encontrar_vinos_similares(sku: sku):
 
 
 
-# MODELO EMBEDING
+# # MODELO EMBEDING
 @app.post("/obtener_vinos_similares_con_m_embeding/")
 def obtener_vinos_similares_con_m_embeding(sku: sku):
     try:
         sku = sku.SKU
         vinos_similares_list = encontrar_vino_similare_con_m_embeding.predecir_vinos_similares_con_m_embeding(sku)
         vinos_con_precio_mas_similar =  filtar.filtrar_por_precio(sku, vinos_similares_list, df)
-        vinos_con_plan_marketin = plan_marketin.filtrar_vinos_con_plan_marketing(vinos_con_precio_mas_similar, df_bodega, df)
+        vinos_con_plan_marketin = plan_marketin.filtrar_vinos_con_plan_marketing(vinos_similares_list, df_bodega, df)
         # unifico los vinos con plan de marketing y precio similares en un solo diccionario
         # para luego pasárselo a la función que va a puntuar con su nivel de relevancia
         vinos_precio_y_marketing = {'precio': vinos_con_precio_mas_similar, 'marketin': vinos_con_plan_marketin}
@@ -89,3 +89,4 @@ def obtener_vinos_similares_con_m_embeding(sku: sku):
     except ValueError as ve:
         raise HTTPException(status_code=400, detail=str(ve))
     
+

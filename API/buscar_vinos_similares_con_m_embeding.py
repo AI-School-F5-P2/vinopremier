@@ -75,3 +75,4 @@ class Predictor:
         vinos_predichos = vino_img.img(vinos_predichos)
 
         return vinos_predichos[1:]
+    

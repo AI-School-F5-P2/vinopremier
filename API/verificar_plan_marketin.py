@@ -17,7 +17,7 @@ class Plan_marketin:
         for vino_similar in vinos_con_precio_mas_similar:
             sku_vino_similar = vino_similar['SKU']
             proveedor = df_vinos[df_vinos['SKU'] == sku_vino_similar]['proveedor'].values
-            print
+            
             if proveedor in bodegas_con_plan.values:
                 vinos_con_pla_marketing.append(vino_similar)
             else:
