@@ -8,12 +8,15 @@ class SKU:
     def __init__(self, SKU):
         self.SKU = SKU
 
+
+
 def obtener_vino_agotado(sku):
     try:
-      
-      url = f"http://localhost:8000/vino_agotado/{sku}"
+      sku_vino = sku.SKU
+      url = f"http://localhost:8000/vino_agotado/{sku_vino}"
       response = requests.get(url)
-      print(response)
+      vino_agotado = response.json()
+      return vino_agotado
     except ValueError as ve:
         print(ve)
      
@@ -31,6 +34,10 @@ def obtener_productos_similares(sku):
         mensaje = {'error':mensaje['detail']}
         return mensaje
 
+def similitud_text(text):
+      return f'<div style="padding: 2px 7px; border-radius: 10px; background-color: #f0f5f5; color: #000000cc; font-weight: 700; font-size: 14px;">Similitud: {text}</div>'
+
+
 def mostrar_descripcion_producto(producto):
     st.write(f"Nombre: {producto['name']}")
     st.write(f"Uvas: {producto['uvas']}")
@@ -39,20 +46,21 @@ def mostrar_descripcion_producto(producto):
     st.write(f"Tipo de crianza: {producto['tipo_crianza']}")
     st.write(f"Meses de barrica: {producto['meses_barrica']}")
     st.write(f"Tipo de vino: {producto['tipo_vino']}")
-    st.write(f"proveedor: {producto['proveedor']}")
+    st.write(f"Proveedor: {producto['proveedor']}")
     st.write(f"Precio: ${producto['final_price']}")
     # Agrega aquí cualquier otra información que se desee mostrar
 
 def mostrar_descripcion_recomendacion(producto):
-    st.write(f"Nombre: {producto['name']}")
+    st.write(f"Nombre: {producto['name']}", style={"padding": "0px", "font-size": "10px"})
     st.write(f"Uvas: {producto['uvas']}")
     st.write(f"Añada: {producto['añada']}")
     st.write(f"DO: {producto['D.O.']}")
     st.write(f"Tipo de crianza: {producto['tipo_crianza']}")
     st.write(f"Meses de barrica: {producto['meses_barrica']}")
     st.write(f"Tipo de vino: {producto['tipo_vino']}")
-    st.write(f"proveedor: {producto['proveedor']}")
+    st.write(f"Proveedor: {producto['proveedor']}")
     st.write(f"Precio: ${producto['final_price']}")
+    st.write(similitud_text(producto['porcentage_similitud']), unsafe_allow_html=True)
     # Agrega aquí cualquier otra información que se desee mostrar
 
 def main():
@@ -82,8 +90,8 @@ def main():
         if productos_similares:
             # Muestra la imagen y la descripción del producto original
             st.write("Producto Original:")
-
-            imagen_url_original = productos_similares[0].get('url_img', '')
+            vino_agotado = obtener_vino_agotado(sku_obj)
+            imagen_url_original = vino_agotado[0].get('image')
             if imagen_url_original:
                 try:
                     response = requests.get(imagen_url_original)
@@ -100,9 +108,7 @@ def main():
             # Muestra la descripción del producto original al lado de la imagen
             with col2:
                 st.write("Descripción del Producto Original:")
-                obtener_vino_agotado(sku_obj)
-                # print(agotado)
-                mostrar_descripcion_producto(productos_similares[0])
+                mostrar_descripcion_producto(vino_agotado[0])
                 
 
             # Muestra las imágenes y descripciones de las recomendaciones en filas

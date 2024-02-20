@@ -84,7 +84,7 @@ class Encontrar_vinos_similares:
             # Imprimir los porcentajes de similitud de los vinos más similares
             for indice, porcentaje in zip(indices[0], similitudes_porcentaje[0]):
                 vino_similar = df.iloc[indice]  # Obtener el vino similar
-                vino_similar['porcentage_similitud'] = porcentaje
+                vino_similar['porcentage_similitud'] = f"{porcentaje:.2%}"
                 if vino_similar['SKU'] != sku:
                     vinos_similares_list.append(vino_similar)
 

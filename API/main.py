@@ -13,6 +13,7 @@ from verificar_plan_marketin import Plan_marketin
 from aplicar_relevancia import PuntuadorDeVinos
 from fastapi.middleware.cors import CORSMiddleware
 from buscar_vinos_similares_con_m_embeding import Predictor
+from obtener_solo_vino_agotado import VinoAgotado
 
 # INSTANCIA DE FASTAPI
 app = FastAPI()
@@ -21,6 +22,7 @@ encontrar_vino_similare_con_m_embeding = Predictor()
 filtar = FiltroPrecio()
 plan_marketin = Plan_marketin()
 puntuadorDeVinos = PuntuadorDeVinos()
+obtener_vino_agotado = VinoAgotado()
 
 app.add_middleware(
     CORSMiddleware,
@@ -93,32 +95,10 @@ def obtener_vinos_similares_con_m_embeding(sku: sku):
     
 
 
-
-
-
 @app.get("/vino_agotado/{sku}")
 def vino_agotado(sku: str):
-    vino_agotado = df_completo[df_completo['SKU'] == sku]
-    vino_agotado = vino_agotado[['SKU','name','uvas', 'añada', 'D.O.', 'tipo_crianza', 'meses_barrica', 'tipo_vino','final_price', 'proveedor']]
-    
-    vino_agotado.fillna(0, inplace=True)  # Reemplazar NaN con 0
-    vino_agotado = vino_agotado.replace([np.inf, -np.inf], np.nan).dropna()  # Eliminar filas con infinitos
-
-    return vino_agotado.to_dict(orient='records')
+    vino = obtener_vino_agotado.obtener_vino_agotado(sku, df_completo)
+    return vino
 
 
 
-
-
-# @app.post("/vino_agotdo")
-# def vino_agotado(sku):
-    
-#     # Filtrar el DataFrame para obtener el vino con el SKU especificado
-#     vino_agotado = df_completo[df_completo['SKU'] == sku]
-#     vino_agotado = vino_agotado[['SKU','name','uvas', 'añada', 'D.O.', 'tipo_crianza', 'meses_barrica', 'tipo_vino','final_price', 'proveedor']]
-    
-#     vino_agotado.fillna(0, inplace=True)  # Reemplazar NaN con 0
-#     vino_agotado = vino_agotado.replace([np.inf, -np.inf], np.nan).dropna()  # Eliminar filas con infinitos
-
-#     return vino_agotado.to_dict(orient='records')
-  
