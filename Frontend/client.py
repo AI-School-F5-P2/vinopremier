@@ -1,3 +1,4 @@
+from fastapi import HTTPException
 import streamlit as st
 import requests
 from PIL import Image
@@ -7,15 +8,25 @@ class SKU:
     def __init__(self, SKU):
         self.SKU = SKU
 
+def obtener_vino_agotado(sku):
+    try:
+      
+      url = f"http://localhost:8000/vino_agotado/{sku}"
+      response = requests.get(url)
+      print(response)
+    except ValueError as ve:
+        print(ve)
+     
+
+
+
 def obtener_productos_similares(sku):
     url = "http://localhost:8000/wineRecommendation"
     response = requests.post(url, json=sku.__dict__)
 
     if response.status_code == 200:
-        print(response.json())
         return response.json()
     else:
-        print(response.json())
         mensaje = response.json()
         mensaje = {'error':mensaje['detail']}
         return mensaje
@@ -89,7 +100,10 @@ def main():
             # Muestra la descripción del producto original al lado de la imagen
             with col2:
                 st.write("Descripción del Producto Original:")
+                obtener_vino_agotado(sku_obj)
+                # print(agotado)
                 mostrar_descripcion_producto(productos_similares[0])
+                
 
             # Muestra las imágenes y descripciones de las recomendaciones en filas
             st.write("\nRecomendaciones de Vinos:")
