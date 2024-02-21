@@ -48,7 +48,11 @@ class Encontrar_vinos_similares:
 
             def obtener_numero_codificado(columna, valor_original):
                 # Aplicar la transformación para obtener el número codificado
-                numero_codificado = label_encoders_loaded[columna].transform([valor_original])[0]
+                try:
+                    numero_codificado = label_encoders_loaded[columna].transform([valor_original])[0]
+                except ValueError:
+                    numero_codificado = -1
+                
                 return numero_codificado
 
             # Extraer solo las características categóricas

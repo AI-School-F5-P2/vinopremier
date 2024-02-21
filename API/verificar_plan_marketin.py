@@ -20,7 +20,8 @@ class Plan_marketin:
             
             if proveedor in bodegas_con_plan.values:
                 vinos_con_pla_marketing.append(vino_similar)
-            else:
-                print('no se encontro vino con plan marketin')
+
+        # muestro un mensaje para asegurar que no encontro vinos con plan de marketin.
+        print('No hay vinos con plan de marketing') if len(vinos_con_pla_marketing) == 0 else None
                 
         return vinos_con_pla_marketing

@@ -8,11 +8,11 @@ from sklearn.preprocessing import LabelEncoder, MinMaxScaler
 from fastapi.responses import JSONResponse
 from obtener_img import Vino
 from filtrar_por_precio import FiltroPrecio
-from buscar_vinos_similares import Encontrar_vinos_similares
+from buscar_vinos_similares_con_knn import Encontrar_vinos_similares
+from buscar_vinos_similares_con_embeding import Predictor
 from verificar_plan_marketin import Plan_marketin
 from aplicar_relevancia import PuntuadorDeVinos
 from fastapi.middleware.cors import CORSMiddleware
-from buscar_vinos_similares_con_m_embeding import Predictor
 from obtener_solo_vino_agotado import VinoAgotado
 
 # INSTANCIA DE FASTAPI
@@ -61,7 +61,7 @@ def encontrar_vinos_similares(sku: sku):
         for vino in vinos_con_relevancia:
             if 'description' in vino:
                 del vino['description']
-        return  vinos_con_relevancia
+        return  vinos_con_precio_mas_similar
     except KeyError:
         raise HTTPException(status_code=404, detail="SKU no encontrado")
     except ValueError as ve:
@@ -87,7 +87,7 @@ def obtener_vinos_similares_con_m_embeding(sku: sku):
         for vino in vinos_con_relevancia:
             if 'description' in vino:
                 del vino['description']
-        return  vinos_con_relevancia
+        return  vinos_con_precio_mas_similar 
     except KeyError:
         raise HTTPException(status_code=404, detail="SKU no encontrado")
     except ValueError as ve:
