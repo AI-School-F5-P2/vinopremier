@@ -32,9 +32,9 @@ app.add_middleware(
     allow_headers=["*"],  # Encabezados permitidos
 )
 
-df = pd.read_csv('./Model/vinos_filtrados.csv')
-df_bodega = pd.read_csv('./Model/suppliers.csv')
-df_completo = pd.read_csv('./Model/dataset_de_productos_completo.csv')
+df = pd.read_csv('dataset/vinos_filtrados.csv')
+df_bodega = pd.read_csv('dataset/suppliers.csv')
+df_completo = pd.read_csv('dataset/dataset_de_productos_completo.csv')
 
 class sku(BaseModel):
     SKU: str
@@ -61,7 +61,8 @@ def encontrar_vinos_similares(sku: sku):
         for vino in vinos_con_relevancia:
             if 'description' in vino:
                 del vino['description']
-        return  vinos_con_precio_mas_similar
+        return  vinos_similares_list
+    
     except KeyError:
         raise HTTPException(status_code=404, detail="SKU no encontrado")
     except ValueError as ve:

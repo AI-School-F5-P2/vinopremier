@@ -2,7 +2,7 @@ import pandas as pd
 
 class Vino():
     def __init__(self) -> None:
-        self.df_sku_image = pd.read_csv('./Model/dataset_sku_image.csv')
+        self.df_sku_image = pd.read_csv('dataset/dataset_sku_image.csv')
      
     def img(self, vinos_similares_list):
 

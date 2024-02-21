@@ -10,3 +10,6 @@ maikol/
 Model
 dataset_sku_image.csv
 Modelo_con_embeding
+
+modelo_knn_v1.pkl
+vinos_filtrados.csv
