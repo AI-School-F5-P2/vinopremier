@@ -55,12 +55,12 @@ def encontrar_vinos_similares(sku: sku):
         vinos_en_stock = stock.verificar(vinos_similares_list)
 
         if vinos_en_stock == []:
-            return 'no hay vinos en stock'
+            raise ValueError('no hay vinos en stock') 
         
         vinos_con_precio_mas_similar =  filtar.filtrar_por_precio(sku, vinos_en_stock, df)
 
         if vinos_con_precio_mas_similar == []:
-            return 'no hay vinos con precio en rango'
+           raise ValueError('no hay vinos con precio en rango') 
         
         vinos_con_plan_marketin = plan_marketin.filtrar_vinos_con_plan_marketing(vinos_con_precio_mas_similar, df_bodega, df)
        
@@ -91,12 +91,12 @@ def obtener_vinos_similares_con_m_embeding(sku: sku):
         vinos_en_stock = stock.verificar(vinos_similares_list)
 
         if vinos_en_stock == []:
-            return 'no hay vinos en stock'
-
+            raise ValueError('no hay vinos en stock') 
+        
         vinos_con_precio_mas_similar =  filtar.filtrar_por_precio(sku, vinos_en_stock, df)
 
         if vinos_con_precio_mas_similar == []:
-            return 'no hay vinos con precio en rango'
+           raise ValueError('no hay vinos con precio en rango') 
         
         vinos_con_plan_marketin = plan_marketin.filtrar_vinos_con_plan_marketing(vinos_con_precio_mas_similar , df_bodega, df)
                 
