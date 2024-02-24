@@ -19,6 +19,10 @@ class Plan_marketin:
             proveedor = df_vinos[df_vinos['SKU'] == sku_vino_similar]['proveedor'].values
             
             if proveedor in bodegas_con_plan.values:
+                vino_similar['puntos_relevancia'] = 1
+                vinos_con_pla_marketing.append(vino_similar)
+            else:
+                vino_similar['puntos_relevancia'] = 0
                 vinos_con_pla_marketing.append(vino_similar)
 
         # muestro un mensaje para asegurar que no encontro vinos con plan de marketin.

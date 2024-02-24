@@ -14,6 +14,7 @@ from verificar_plan_marketin import Plan_marketin
 from aplicar_relevancia import PuntuadorDeVinos
 from fastapi.middleware.cors import CORSMiddleware
 from obtener_solo_vino_agotado import VinoAgotado
+from verificiar_stock import Veririficar_stock
 
 # INSTANCIA DE FASTAPI
 app = FastAPI()
@@ -23,6 +24,7 @@ filtar = FiltroPrecio()
 plan_marketin = Plan_marketin()
 puntuadorDeVinos = PuntuadorDeVinos()
 obtener_vino_agotado = VinoAgotado()
+stock = Veririficar_stock()
 
 app.add_middleware(
     CORSMiddleware,
@@ -32,7 +34,7 @@ app.add_middleware(
     allow_headers=["*"],  # Encabezados permitidos
 )
 
-df = pd.read_csv('dataset/vinos_filtrados.csv')
+df = pd.read_csv('model_training/embeding/dataset_train/vinos_filtrados.csv')
 df_bodega = pd.read_csv('dataset/suppliers.csv')
 df_completo = pd.read_csv('dataset/dataset_de_productos_completo.csv')
 
@@ -50,23 +52,32 @@ def encontrar_vinos_similares(sku: sku):
     try:  
         sku = sku.SKU
         vinos_similares_list = encontrar_vino.encontrar_vinos_similares(sku, df)
-        vinos_con_precio_mas_similar =  filtar.filtrar_por_precio(sku, vinos_similares_list, df)
+        vinos_en_stock = stock.verificar(vinos_similares_list)
+
+        if vinos_en_stock == []:
+            return 'no hay vinos en stock'
+        
+        vinos_con_precio_mas_similar =  filtar.filtrar_por_precio(sku, vinos_en_stock, df)
+
+        if vinos_con_precio_mas_similar == []:
+            return 'no hay vinos con precio en rango'
+        
         vinos_con_plan_marketin = plan_marketin.filtrar_vinos_con_plan_marketing(vinos_con_precio_mas_similar, df_bodega, df)
-        # unifico los vinos con plan de marketing y precio similares en un solo diccionario
-        # para luego pasárselo a la función que va a puntuar con su nivel de relevancia
-        vinos_precio_y_marketing = {'precio': vinos_con_precio_mas_similar, 'marketin': vinos_con_plan_marketin}
-        # aplico el nivel de relevancia 
-        vinos_con_relevancia = puntuadorDeVinos.asignar_puntos_de_relevancia(vinos_precio_y_marketing, vinos_similares_list)
+       
+        vinos_similares_list = sorted(vinos_con_plan_marketin, key=lambda x: x['puntos_relevancia'], reverse=True)
+        
         # elimino la descripción de los vinos
-        for vino in vinos_con_relevancia:
-            if 'description' in vino:
-                del vino['description']
-        return  vinos_similares_list
+        if vinos_similares_list != []: 
+            for vino in vinos_similares_list:
+                if 'description' in vino:
+                    del vino['description']
+
+        return vinos_similares_list
     
-    except KeyError:
-        raise HTTPException(status_code=404, detail="SKU no encontrado")
     except ValueError as ve:
         raise HTTPException(status_code=400, detail=str(ve))
+    except KeyError:
+        raise HTTPException(status_code=404, detail="SKU no encontrado")
     
 
 
@@ -77,18 +88,26 @@ def obtener_vinos_similares_con_m_embeding(sku: sku):
     try:
         sku = sku.SKU
         vinos_similares_list = encontrar_vino_similare_con_m_embeding.predecir_vinos_similares_con_m_embeding(sku)
-        vinos_con_precio_mas_similar =  filtar.filtrar_por_precio(sku, vinos_similares_list, df)
-        vinos_con_plan_marketin = plan_marketin.filtrar_vinos_con_plan_marketing(vinos_similares_list, df_bodega, df)
-        # unifico los vinos con plan de marketing y precio similares en un solo diccionario
-        # para luego pasárselo a la función que va a puntuar con su nivel de relevancia
-        vinos_precio_y_marketing = {'precio': vinos_con_precio_mas_similar, 'marketin': vinos_con_plan_marketin}
-        # aplico el nivel de relevancia 
-        vinos_con_relevancia = puntuadorDeVinos.asignar_puntos_de_relevancia(vinos_precio_y_marketing, vinos_similares_list)  
-        # elimino la descripción de los vinos
-        for vino in vinos_con_relevancia:
-            if 'description' in vino:
-                del vino['description']
-        return  vinos_con_precio_mas_similar 
+        vinos_en_stock = stock.verificar(vinos_similares_list)
+
+        if vinos_en_stock == []:
+            return 'no hay vinos en stock'
+
+        vinos_con_precio_mas_similar =  filtar.filtrar_por_precio(sku, vinos_en_stock, df)
+
+        if vinos_con_precio_mas_similar == []:
+            return 'no hay vinos con precio en rango'
+        
+        vinos_con_plan_marketin = plan_marketin.filtrar_vinos_con_plan_marketing(vinos_con_precio_mas_similar , df_bodega, df)
+                
+        vinos_similares_list = sorted(vinos_con_plan_marketin, key=lambda x: x['puntos_relevancia'], reverse=True)
+        
+        if vinos_similares_list != []: 
+            for vino in vinos_similares_list:
+                if 'description' in vino:
+                    del vino['description']
+
+        return vinos_similares_list
     except KeyError:
         raise HTTPException(status_code=404, detail="SKU no encontrado")
     except ValueError as ve:

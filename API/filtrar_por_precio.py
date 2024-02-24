@@ -1,5 +1,9 @@
+import pandas as pd
+
+
 class FiltroPrecio:
     def __init__(self):
+        self.df_original_completo =  pd.read_csv('dataset/dataset_de_productos_completo.csv')
         pass
 
     def filtrar_por_precio(self, vino_id_agotado, vinos_similares_list, df):
@@ -17,12 +21,13 @@ class FiltroPrecio:
         try:
             matches = []
             # obtener el precio del vino
-            precio_vino = df[df['SKU'] == vino_id_agotado]['final_price'].values[0]
+            precio_vino_agotado = self.df_original_completo[self.df_original_completo['SKU'] == vino_id_agotado]['final_price'].values[0]
+            
             # calcular el mínimo y el máximo
             porcentaje_por_encima = p_min #0.2
             porcentaje_por_debajo = p_max #0.05
-            precio_min = abs(precio_vino * porcentaje_por_debajo - precio_vino)
-            precio_max = precio_vino * porcentaje_por_encima + precio_vino
+            precio_min = abs(precio_vino_agotado * porcentaje_por_debajo - precio_vino_agotado)
+            precio_max = precio_vino_agotado * porcentaje_por_encima + precio_vino_agotado
             
             for vino_similar in vinos_similares_list:
                 sku_vino_similar = vino_similar['SKU']

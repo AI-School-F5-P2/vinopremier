@@ -1,5 +1,5 @@
 class PuntuadorDeVinos:
-    def __init__(self, puntos_por_precio=1, puntos_por_plan_de_marketing=2):
+    def __init__(self, puntos_por_precio=8, puntos_por_plan_de_marketing=1):
         self.puntos_por_precio = puntos_por_precio
         self.puntos_por_plan_de_marketing = puntos_por_plan_de_marketing
 
@@ -18,13 +18,17 @@ class PuntuadorDeVinos:
 
         data_con_relevancia = []
 
+        if not vinos_precio_y_marketin['marketin'] and not vinos_precio_y_marketin['precio']:
+            return data_con_relevancia
+
+
         for vino_similar in vinos_similares:
             sku_vino_similar = vino_similar['SKU']
             relevancia = 0
             if sku_vino_similar in sku_vinos_con_plan_marketin:
                 relevancia += 1  # Si hay marketing, sumamos 2 puntos
             if sku_vino_similar in sku_vinos_con_precio_mas_similar:
-                relevancia += 2  # Si hay precio similar, sumamos 1 punto
+                relevancia += 8  # Si hay precio similar, sumamos 1 punto
 
             vino_similar['nivel_relevancia'] = relevancia
             # Agregamos el SKU con su puntuación de relevancia
