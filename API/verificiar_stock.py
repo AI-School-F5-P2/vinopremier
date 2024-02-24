@@ -2,7 +2,7 @@ import pandas as pd
 
 class Veririficar_stock():
     def __init__(self) -> None:
-        self.df_stock_limpio = pd.read_csv('dataset/df_stock_limpio.csv')
+        self.df_stock_limpio = pd.read_csv('dataset/df_stock_original.csv')
 
     def verificar(self,vinos_similares):
         vinos_en_stock_array = []

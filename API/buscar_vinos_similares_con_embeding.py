@@ -12,6 +12,7 @@ import pickle
 import re
 from bs4 import BeautifulSoup
 import html
+from obtener_img import Vino
 
 
 from gensim.models import Word2Vec
@@ -63,9 +64,7 @@ class Predictor:
 
     def predecir_vinos_similares_con_m_embeding(self, sku):
 
-        
-
-
+        vino_img = Vino()
         model, sku_decripcion_combinada_list, vino_agotado = self.cargar_modelo_word2vec(sku)
 
         df_caracteristicas = vino_agotado[['uvas', 'añada', 'D.O.', 'tipo_crianza', 'meses_barrica', 'tipo_vino', 'final_price']]
@@ -92,8 +91,11 @@ class Predictor:
             vino_predicho = self.df[self.df['SKU'] == vino[0]]
             vino_predicho['porcentage_similitud'] = vino[1]
             vinos_predichos.append(vino_predicho.to_dict(orient='records')[0])
+
+        vinos_predichos = vinos_predichos[1:]
+        vinos_predichos = vino_img.img(vinos_predichos)
         
-        return vinos_predichos[1:]  # Excluir el primer vino que es el mismo agotado
+        return  vinos_predichos # Excluir el primer vino que es el mismo agotado
     
 
 

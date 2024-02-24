@@ -28,6 +28,7 @@ def obtener_productos_similares(sku):
     response = requests.post(url, json=sku.__dict__)
 
     if response.status_code == 200:
+        print(response.json())
         return response.json()
     else:
         mensaje = response.json()
