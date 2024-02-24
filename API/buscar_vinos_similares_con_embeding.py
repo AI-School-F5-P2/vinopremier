@@ -19,6 +19,7 @@ from gensim.models import Word2Vec
 from sklearn.metrics.pairwise import cosine_similarity
 import numpy as np
 
+
 class Predictor:
     def __init__(self):
         self.ruta_modelos = 'model_training/embeding/models'
@@ -90,9 +91,10 @@ class Predictor:
         for vino in top_10_vinos_similares:
             vino_predicho = self.df[self.df['SKU'] == vino[0]]
             vino_predicho['porcentage_similitud'] = vino[1]
-            vinos_predichos.append(vino_predicho.to_dict(orient='records')[0])
+            if vino_predicho['SKU'].iloc[0] != sku:
+                vinos_predichos.append(vino_predicho.to_dict(orient='records')[0])
 
-        vinos_predichos = vinos_predichos[1:]
+        # vinos_predichos = vinos_predichos[1:]
         vinos_predichos = vino_img.img(vinos_predichos)
         
         return  vinos_predichos # Excluir el primer vino que es el mismo agotado
