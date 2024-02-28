@@ -1,0 +1,143 @@
+/* Estilo para las tarjetas de vino */
+.header{
+    max-width: 1200px;
+    margin: 10px auto 70px auto;
+}
+
+
+.seccion{
+    border-bottom: 2px solid rgba(0, 0, 0, 0.277);
+    display: flex;
+    justify-content: space-between;
+    max-width: 1400px;
+    margin: 20px auto 0  auto;
+    height: 600px;
+    
+
+}
+
+.text{
+    line-height: 25px;
+    font-size: 14px;
+    padding: 0;
+    margin: 0;
+}
+
+.form-control{
+    width: 100%;
+    height: 40px;
+    border: none;
+    border: 2px solid #ac946a;
+    border-radius: 10px;
+}
+
+.btn-primary{
+    width: 90px;
+    height: 40px;
+    background-color: black;
+    border: none;
+    border-radius: 10px;
+    color: white;
+    margin-top: 10px;
+}
+
+
+.similitud{
+    font-weight: bold;
+    position: absolute;
+    height: 30px;
+    width: 50px;
+    height: auto;
+    top: 0;
+    left: 0;
+    background: #ac946a;
+    display: flex;
+    align-items: center;
+    font-size: 12px;
+    justify-content: center;
+}
+
+.selected-vino{
+    position: relative;
+    width: 500px;
+    height: 100%;
+    display: flex;
+}
+
+.des_agotado{
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+    
+}
+
+.name_agotado{
+    margin-top: 10px;
+    font-size: 30px;
+    max-width: 270px;
+    font-family: "Signika Negative", sans-serif;
+   
+}
+
+.car_agotado{
+    line-height: 17px;
+    margin-bottom: 20px;
+    font-size: 16px;
+}
+
+
+  /* Estilo para las imágenes de los vinos */
+  .vino-img {
+    width: 100%;
+    height: auto;
+  }
+
+  
+  .row {
+    justify-content: flex-end;
+    display: flex;
+    height: 100%;
+    padding-left: 60px;
+    
+  }
+  
+  .row > div {
+    flex: 0 0 calc(50% - 5px); /* Calculamos el ancho de cada columna (50% del contenedor menos el espacio entre columnas) */
+    margin-right: 20px; /* Espacio entre las columnas */
+  }
+  
+  .row > div:last-child {
+    margin-right: 0; /* Eliminamos el espacio en el último elemento de cada fila */
+  }
+
+  .card{
+    margin-top: 10px;
+    overflow: hidden;
+    border-radius: 10px;
+    box-shadow: rgba(0, 0, 0, 0.07) 0px 1px 1px, rgba(0, 0, 0, 0.07) 0px 2px 2px, rgba(0, 0, 0, 0.07) 0px 4px 4px, rgba(0, 0, 0, 0.07) 0px 8px 8px, rgba(0, 0, 0, 0.07) 0px 16px 16px;
+    height: 50%;
+    width: 400px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding:  10px 0;
+    line-height: 10px;
+    font-size: 13px;
+  }
+
+  .title {
+    font-weight: 600;
+    color: #161616; /* Color del texto */
+  }
+
+  .card-title{
+    font-size: 20px;
+    line-height: 30px;
+  }
+  
+
+  .card-img-top{
+    height: 100%;
+    
+  }

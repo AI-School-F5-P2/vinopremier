@@ -24,7 +24,8 @@ def obtener_vino_agotado(sku):
 
 
 def obtener_productos_similares(sku):
-    url = "http://localhost:8000/obtener_vinos_similares_con_m_embeding"
+    # url = "http://localhost:8000/obtener_vinos_similares_con_m_embeding"
+    url = "http://localhost:8000/wineRecommendation"
     response = requests.post(url, json=sku.__dict__)
 
     if response.status_code == 200:

@@ -48,7 +48,7 @@ class Predictor:
             raise ValueError("El tipo de vino del vino seleccionado no es válido. Debe ser tinto, blanco o rosado.")
 
         tipo_vino_agotado = vino_agotado['tipo_vino'].iloc[0]
-
+        
         if tipo_vino_agotado == 'Vino Blanco':
             nombre_del_modelo = 'modelo_word2vec_Vino Blanco.pkl'
         elif tipo_vino_agotado == 'Vino Tinto':
@@ -90,7 +90,8 @@ class Predictor:
         vinos_predichos = []
         for vino in top_10_vinos_similares:
             vino_predicho = self.df[self.df['SKU'] == vino[0]]
-            vino_predicho['porcentage_similitud'] = vino[1]
+            similitud_formateada = round(vino[1] * 100, 2)
+            vino_predicho['porcentage_similitud'] = similitud_formateada
             if vino_predicho['SKU'].iloc[0] != sku:
                 vinos_predichos.append(vino_predicho.to_dict(orient='records')[0])
 

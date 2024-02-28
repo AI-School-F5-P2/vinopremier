@@ -28,7 +28,7 @@ class EntrenadorModeloWord2Vec:
             descripcion_vino = descripcion_vino['description'].str.lower()
 
             corpus = [[palabra.lower() for palabra in descripcion.split()] for descripcion in descripcion_vino]
-            model = Word2Vec(sentences=corpus, vector_size=50, window=5, min_count=1, workers=4)
+            model = Word2Vec(sentences=corpus, vector_size=100, window=5, min_count=1, workers=4)
             model.save(os.path.join(self.directorio_modelos, f'modelo_word2vec_{name_tipo_vino}.pkl'))
 
             caracteristicas_del_vino = df_tipo_vino[['uvas', 'añada', 'D.O.', 'tipo_crianza', 'meses_barrica', 'tipo_vino', 'proveedor', 'final_price']]

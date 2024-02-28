@@ -9,7 +9,7 @@ class FiltroPrecio:
     def filtrar_por_precio(self, vino_id_agotado, vinos_similares_list, df):
         results = self.filtrar(vino_id_agotado, vinos_similares_list, df, 0.2, 0.05)
 
-        if len(results) < 1:
+        if len(results) < 3:
             print('no se encontraron vinos con precios en el rango de 0.2 y 0.05')
             results = self.filtrar(vino_id_agotado, vinos_similares_list, df, 0.2, 0.3)  
 
