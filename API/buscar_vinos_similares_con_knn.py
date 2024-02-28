@@ -14,7 +14,7 @@ from sklearn.preprocessing import LabelEncoder
 
 class Encontrar_vinos_similares:
     def __init__(self):
-        self.df_completo = pd.read_csv('dataset/dataset_de_productos_completo.csv')
+        self.df_completo = pd.read_csv('./dataset/dataset_de_productos_completo.csv')
         
 
     def validar_tipo_vino_agotado(self, sku_vino):

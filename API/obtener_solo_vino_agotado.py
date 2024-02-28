@@ -6,15 +6,22 @@ class VinoAgotado:
 
         pass
 
-    def obtener_vino_agotado(self, sku, df_completo):
-        vino_agotado = df_completo[df_completo['SKU'] == sku]
+    def obtener_vino_agotado(self, nombre_vino, df_completo):
+
+        vino = df_completo[df_completo['name'] == nombre_vino]
+        if vino.empty:
+            raise ValueError(f"El vino con nombre {nombre_vino} no se encuentra en el DataFrame.")
+        sku_vino = vino.iloc[0]['SKU']  # Obtener el SKU del vino encontrado
+
+
+        vino_agotado = df_completo[df_completo['SKU'] == sku_vino]
         vino_agotado = vino_agotado[['SKU','name','uvas', 'añada', 'D.O.', 'tipo_crianza', 'meses_barrica', 'tipo_vino','final_price', 'proveedor', 'image']]
         
         # VALIDACIONES
         if vino_agotado.empty:
-            raise ValueError(f"El SKU {sku} no se encuentra en el DataFrame.")
+            raise ValueError(f"El SKU {sku_vino} no se encuentra en el DataFrame.")
         # Validar el tipo de vino
-        if self.validar_tipo_vino_agotado(sku, df_completo):
+        if self.validar_tipo_vino_agotado(sku_vino, df_completo):
             raise ValueError("El tipo de vino del vino seleccionado no es válido. Debe ser tinto, blanco o rosado.")
         if vino_agotado.isnull().any().any():
             raise ValueError("¡Hay valores NaN en las características del vino!")
