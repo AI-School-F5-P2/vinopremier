@@ -1,0 +1,79 @@
+<div class="header">
+    <div class="class1">
+        <h1>Vinopremier Recomendacion</h1>
+        <!-- <img src="../../assets/copa.png" alt=""> -->
+    </div>
+    <div class="container">
+        <div class="row-i">
+          <div class="col-md-6 mb-3">
+            <p class="text">Ingrese el sku</p>
+            <input type="text" class="form-control"[(ngModel)]="sku">
+            <button class="btn btn-primary" (click)="buscarVino()">Buscar</button>
+          </div>
+        </div>
+      </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+<section class="seccion">
+    <p *ngIf="errorDetail" class="error-message">{{ errorDetail }}</p>
+
+    <div *ngIf="selectedVino" class="selected-vino">
+        <img [src]="selectedVino.image" alt="Imagen del vino">
+        <div class="des_agotado">
+            <div class="name_agotado">
+                <h3 >{{ selectedVino.name }}</h3>
+            </div>
+            <div class="car_agotado">
+                <p><span class="title">Añada:</span> {{ selectedVino['añada'] }}</p>
+                <p><span class="title">Tipo de vino:</span> {{ selectedVino.tipo_vino }}</p>
+                <p><span class="title">D.O.:</span> {{ selectedVino['D.O.'] }}</p>
+                <p><span class="title">Precio:</span> ${{ selectedVino.final_price }}</p>
+                <p><span class="title">Uvas:</span> {{ selectedVino.uvas }}</p>
+                <p><span class="title">Proveedor:</span> {{ selectedVino.proveedor }}</p>
+                <p><span class="title">Meses barrica:</span>  {{ selectedVino.meses_barrica }}</p>
+                <p><span class="title">Meses barrica:</span>  {{ selectedVino.tipo_crianza }}</p>
+                <p><span class="title">Precio:</span> {{ selectedVino.final_price }}</p>
+            </div>
+        </div>
+        <!-- Agrega más detalles del vino según sea necesario -->
+    </div>
+      
+    <div class="container">
+        <div class="row">
+          <div class="col-md-4 mb-3" *ngFor="let vino of vinos">
+            <div class="card">
+              <img [src]="vino.url_img" class="card-img-top" alt="Imagen del vino">
+              <div class="card-body">
+                <h5 class="card-title">{{ vino.name }}</h5>
+                <div class="similitud">
+                    <p >{{vino.porcentage_similitud}}%</p>
+                </div>
+                <p class="card-text"><span class="title">Añada:</span> {{ vino['añada'] }}</p>
+                <p class="card-text"><span class="title">Tipo de vino:</span> {{ vino.tipo_vino }}</p>
+                <p class="card-text"><span class="title">D.O.:</span> {{ vino['D.O.'] }}</p>
+                <p class="card-text"><span class="title">Precio:</span> ${{ vino.final_price }}</p>
+                <p class="card-text"><span class="title">Uvas:</span> {{ vino.uvas }}</p>
+                <p class="card-text"><span class="title">Meses barrica:</span> {{ vino.meses_barrica }}</p>
+                <p class="card-text"><span class="title">Tipo crianza:</span> {{ vino.tipo_crianza }}</p>
+                <p class="card-text"><span class="title">Proveedor:</span> {{ vino.proveedor }}</p>
+                
+                <!-- Puedes agregar más información según tus necesidades -->
+               
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+</section> 
+
+  
